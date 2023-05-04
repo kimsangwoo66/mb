@@ -26,8 +26,8 @@ public class SampleController {
 //        sampleService.getList();
 //    }
 
-    @GetMapping("/api/sample")
-    public ArrayList gList() throws URISyntaxException {
+    @GetMapping("/api/column")
+    public Map gList() throws URISyntaxException {
 
         System.out.println("컨트롤러에 들어옴");
         return sampleService.getList();

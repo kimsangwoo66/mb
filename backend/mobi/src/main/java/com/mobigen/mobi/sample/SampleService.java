@@ -2,6 +2,7 @@ package com.mobigen.mobi.sample;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,13 +29,16 @@ public class SampleService {
     @Value("${git.tokenvalue}")
     private String token;
 
-    public ArrayList getList() throws URISyntaxException {
+    public Map getList() throws URISyntaxException {
         String owner = "mobigen";
         String repo = "IRIS-Analyzer";
         String apiUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/issues";
         ArrayList allData = new ArrayList();
         int dataCount = 0;
         int page = 1;
+
+        Map<String, Integer> registerCount = new HashMap<>();
+
 
 
         while (true) {
@@ -142,7 +146,38 @@ public class SampleService {
         System.out.println(allData.toString());
         System.out.println("dataCount: " + dataCount);
 
-        return allData;
+
+
+
+        for(Object jObject : allData){
+            String register = ((TextNode) ((Map<String, JsonNode>) jObject).get("register")).asText();
+            // 맵에 해당 register가 있는지 확인하고, 있으면 값을 1 증가
+            if (registerCount.containsKey(register)) {
+                registerCount.put(register, registerCount.get(register) + 1);
+            } else {
+                registerCount.put(register, 1);
+            }
+        }
+
+        // 결과를 출력합니다.
+        for (String register : registerCount.keySet()) {
+            int count = registerCount.get(register);
+            System.out.println(register + ": " + count);
+
+        }
+        System.out.println("======================");
+        System.out.println(registerCount.toString());
+        /*
+        * 등록자 별 이슈 개수 카운트 후 리스트에 삽입
+        *
+        *
+        *
+        * */
+
+
+
+        //return allData;
+        return registerCount;
     }
 
 
