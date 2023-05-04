@@ -4,6 +4,9 @@
         <hr/>
         <hr/>
         <PieChartComponent/>
+        <hr/>
+        <hr/>
+        <LineChartComponent/>
     </div>
 
 </template>
@@ -14,12 +17,13 @@ import accessibility from 'highcharts/modules/accessibility'
 import axios from "axios";
 
 import PieChartComponent from "@/components/PieChartComponent.vue";
+import LineChartComponent from "@/components/LineChartComponent.vue";
 accessibility(Highcharts);
 
 
 export default {
     name: "App",
-    components: {PieChartComponent},
+    components: {LineChartComponent,PieChartComponent},
 
     data() {
         return {
@@ -51,15 +55,12 @@ export default {
             },
         }
     },
-    created(){
-        console.log("확인좀 해보자")
-        console.log("이럼 감지하나?ddd")
 
-    },
     mounted() {
     axios.get("/api/column").then(response => {
         console.log(response.data)
 
+        // 서버에서 응답받은 data를 컬럼차트 data 포맷에 맞게 변경하여 series 프로퍼티 키값에 추가
         const chartData = Object.entries(response.data).map(([name, value]) => [name, value])
         this.chartOptions.series[0].data = chartData
     })

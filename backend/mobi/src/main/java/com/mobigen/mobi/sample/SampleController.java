@@ -29,15 +29,22 @@ public class SampleController {
     @GetMapping("/api/column")
     public Map gList() throws URISyntaxException {
 
-        System.out.println("차트 컨트롤러 in");
+        System.out.println("차트 컨트롤러 동작");
         return sampleService.getList();
     }
 
     @GetMapping("/api/pie")
     public Map pList() throws URISyntaxException {
-        System.out.println("pie 컨트롤러 in");
+        System.out.println("pie 컨트롤러 동작");
 
         return sampleService.getPieList();
+    }
+
+    @GetMapping("/api/line")
+    public Map lList() throws URISyntaxException {
+        System.out.println("line 컨트롤러 동작");
+
+        return sampleService.getLlist();
     }
 
 

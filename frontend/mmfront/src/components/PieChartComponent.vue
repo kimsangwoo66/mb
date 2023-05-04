@@ -45,37 +45,8 @@ export default {
                     }
                 },
                 series: [{
-                    name: 'Brands',
-                    colorByPoint: true,
-                    data: [{
-                        name: 'Chrome',
-                        y: 1,
 
-                    }, {
-                        name: 'Edge',
-                        y: 85
-                    },  {
-                        name: 'Firefox',
-                        y: 384
-                    }, {
-                        name: 'Safari',
-                        y: 35
-                    }, {
-                        name: 'Internet Explorer',
-                        y: 28
-                    },  {
-                        name: 'Opera',
-                        y: 96
-                    }, {
-                        name: 'Sogou Explorer',
-                        y: 1
-                    }, {
-                        name: 'QQ',
-                        y: 36
-                    }, {
-                        name: 'Other',
-                        y: 20
-                    }]
+                    data: []
                 }]
 
             },
@@ -102,7 +73,7 @@ export default {
     },
     mounted() {
         axios.get("/api/pie").then(response => {
-            console.log(response.data)
+
             const data = response.data;
 
             const chartOptions = {
@@ -132,17 +103,20 @@ export default {
                             enabled: true,
                             format: '<b>{point.name}</b>: {point.percentage:.1f} %'
                         },
-                        showInLegend: true
+                        showInLegend: true,
+                        legend: {
+                            align: "right"
+                        }
                     }
                 },
                 series: [{
-                    name: 'Brands',
+
                     colorByPoint: true,
                     data: []
                 }]
             };
 
-            // 데이터를 series.data 배열에 추가
+            // 데이터를 series.data 배열에 적합한 포맷으로 변경하여 추가
             Object.keys(data).forEach(key => {
                 chartOptions.series[0].data.push({
                     name: key,
@@ -150,7 +124,7 @@ export default {
                 });
             });
 
-            // 차트를 그린다.
+            // 파이 차트 재렌더링
             Highcharts.chart('chart-container', chartOptions);
         })
             .catch(error => {
