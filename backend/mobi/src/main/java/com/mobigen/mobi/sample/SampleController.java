@@ -29,9 +29,19 @@ public class SampleController {
     @GetMapping("/api/column")
     public Map gList() throws URISyntaxException {
 
-        System.out.println("컨트롤러에 들어옴");
+        System.out.println("차트 컨트롤러 in");
         return sampleService.getList();
     }
+
+    @GetMapping("/api/pie")
+    public Map pList() throws URISyntaxException {
+        System.out.println("pie 컨트롤러 in");
+
+        return sampleService.getPieList();
+    }
+
+
+
 
 
 }

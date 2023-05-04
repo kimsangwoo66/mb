@@ -3,6 +3,7 @@
         <highcharts :options="chartOptions"></highcharts>
         <hr/>
         <hr/>
+        <PieChartComponent/>
     </div>
 
 </template>
@@ -11,11 +12,14 @@
 import Highcharts from 'highcharts'
 import accessibility from 'highcharts/modules/accessibility'
 import axios from "axios";
+
+import PieChartComponent from "@/components/PieChartComponent.vue";
 accessibility(Highcharts);
 
 
 export default {
     name: "App",
+    components: {PieChartComponent},
 
     data() {
         return {
@@ -49,7 +53,7 @@ export default {
     },
     created(){
         console.log("확인좀 해보자")
-        console.log("이럼 감지하나?dd")
+        console.log("이럼 감지하나?ddd")
 
     },
     mounted() {
@@ -63,5 +67,8 @@ export default {
             console.log(error)
         })
     }
+
+
+
 }
 </script>
