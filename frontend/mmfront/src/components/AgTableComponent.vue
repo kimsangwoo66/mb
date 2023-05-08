@@ -14,9 +14,9 @@
                 <label>라벨 필터링</label>
                 <select name="labelFilter">
                     <option value="">null</option>
-                    <option>임시1</option>
-                    <option>임시2</option>
-                    <option>임시3</option>
+                    <option>개선</option>
+                    <option>버그</option>
+                    <option>보류</option>
 
                 </select>
                  &nbsp;&nbsp;
@@ -86,14 +86,18 @@ export default {
             console.log("startDate:", this.startDate);
             console.log("endDate:", this.endDate);
 
-            axios.post("/api/searchIssue",{
-                stateValue: this.stateValue,
-                labelValue: this.labelValue,
-                startDate: this.startDate,
-                endDate: this.endDate,
-            }).then(response => {
-                console.log(response.data)
+            await axios.post("/api/searchIssue", {
+
+                    stateValue: this.stateValue,
+                    labelValue: this.labelValue,
+                    startDate: this.startDate,
+                    endDate: this.endDate,
+
             })
+
+            // }).then(response => {
+            //     console.log(response.data)
+            // })
 
 
 

@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -35,16 +32,32 @@ public class SampleController {
 
     @GetMapping("/api/pie")
     public Map pList() throws URISyntaxException {
-        System.out.println("pie 컨트롤러 동작");
+        System.out.println("pie 리소스 동작");
 
         return sampleService.getPieList();
     }
 
     @GetMapping("/api/line")
     public Map lList() throws URISyntaxException {
-        System.out.println("line 컨트롤러 동작");
+        System.out.println("line 리소스 동작");
 
         return sampleService.getLlist();
+    }
+
+    @PostMapping("/api/searchIssue")
+    public void sList(@RequestBody Map<String, String> requestData) throws URISyntaxException {
+        String stateValue = requestData.get("stateValue");
+        String labelValue = requestData.get("labelValue");
+        String startDate = requestData.get("startDate");
+        String endDate = requestData.get("endDate");
+
+        System.out.println("state: " + stateValue + " label: " + labelValue + " startDate: "
+                + startDate + " endDate: " + endDate);
+
+        sampleService.searchList(stateValue, labelValue, startDate, endDate);
+
+
+
     }
 
 
