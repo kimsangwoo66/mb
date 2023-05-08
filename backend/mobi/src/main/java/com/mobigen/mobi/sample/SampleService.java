@@ -142,7 +142,7 @@ public class SampleService {
 
         }
 
-//        System.out.println(allData.toString());
+        System.out.println(allData.toString());
 //        System.out.println("dataCount: " + dataCount);
 
 

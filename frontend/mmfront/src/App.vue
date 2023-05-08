@@ -1,14 +1,19 @@
 <template>
     <div class="App">
-        <highcharts :options="chartOptions"></highcharts>
-        <hr/>
-        <hr/>
-        <PieChartComponent/>
-        <hr/>
-        <hr/>
-        <LineChartComponent/>
-    </div>
+        <div class="chart-row">
+            <highcharts :options="chartOptions"></highcharts>
+        </div>
+        <div class="chart-row">
+            <PieChartComponent />
+        </div>
+        <div class="chart-row">
+            <LineChartComponent />
+        </div>
+        <div>
+            <AgTableComponent/>
+        </div>
 
+    </div>
 </template>
 
 <script>
@@ -18,12 +23,15 @@ import axios from "axios";
 
 import PieChartComponent from "@/components/PieChartComponent.vue";
 import LineChartComponent from "@/components/LineChartComponent.vue";
+import AgTableComponent from "@/components/AgTableComponent.vue";
+
+
 accessibility(Highcharts);
 
 
 export default {
     name: "App",
-    components: {LineChartComponent,PieChartComponent},
+    components: {AgTableComponent, LineChartComponent,PieChartComponent},
 
     data() {
         return {
@@ -73,3 +81,19 @@ export default {
 
 }
 </script>
+<style>
+@import "~ag-grid-community/styles/ag-grid.css";
+@import "~ag-grid-community/styles/ag-theme-alpine.css";
+
+.chart-row {
+    display: inline-block;
+    width: 33%;
+    margin: 0;
+    vertical-align: top;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+
+
+</style>
