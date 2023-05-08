@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.extern.slf4j.Slf4j;
+import netscape.javascript.JSObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -298,8 +299,8 @@ public class SampleService {
 //            System.out.println(register + ": " + count);
 
         }
-        System.out.println("======================");
-        System.out.println(registerCount.toString());
+//        System.out.println("======================");
+//        System.out.println(registerCount.toString());
 
 
 
@@ -435,10 +436,153 @@ public class SampleService {
 //            System.out.println(createTime + ": " + count);
 
         }
-        System.out.println("======================");
-        System.out.println(createAtCount.toString());
+//        System.out.println("======================");
+//        System.out.println(createAtCount.toString());
 
         return createAtCount;
+    }
+
+
+
+    public void searchList(String stateValue, String labelValue, String startDate, String endDate) throws URISyntaxException {
+        ArrayList allData = new ArrayList();
+        int dataCount = 0;
+        int page = 1;
+
+        Map<String, Integer> searchResult = new HashMap<>();
+
+
+        //git api를 사용하여 필요 데이터 정재 후 allData 리스트에 삽입
+        //{number=1583, state="closed", title="제목", closeAt=2023-03-08, content="내용",
+        // createAt=2023-03-08, register="veldise", labels=["개선","진행중"]} -> allData
+        while (true) {
+
+            URIBuilder builder = new URIBuilder(apiUrl);
+            builder.setParameter("state", "all");
+            builder.setParameter("per_page", "100");
+            builder.setParameter("page", Integer.toString(page));
+
+
+            try {
+                URI uri = builder.build();
+                HttpGet request = new HttpGet(uri);
+                request.addHeader("Authorization", "Bearer " + token);
+
+                HttpClient httpClient = HttpClients.createDefault();
+                HttpResponse response = httpClient.execute(request);
+                HttpEntity entity = response.getEntity();
+
+                if (entity != null) {
+                    String result = EntityUtils.toString(entity);
+                    ObjectMapper objectMapper = new ObjectMapper();
+
+                    JsonNode jsonNode = objectMapper.readTree(result);
+
+
+
+                    if (jsonNode.size() > 0) {
+                        for (JsonNode node : jsonNode) {
+
+
+                            String createdAt = String.valueOf(node.get("created_at"))
+                                    .substring(1, node.get("created_at").asText().length())
+                                    .trim();
+
+                            String closedAt;
+                            String trans_closedAt;
+
+
+                            LocalDateTime createDateTime = LocalDateTime.parse(createdAt, DateTimeFormatter.ISO_DATE_TIME);
+                            String trans_createdAt = createDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+
+                            JsonNode closedAtNullCheck = node.get("closed_at");
+                            if("null".equals(closedAtNullCheck.toString())){
+
+                                trans_closedAt = "";
+
+                            }
+                            else{
+                                closedAt = String.valueOf(node.get("closed_at"))
+                                        .substring(1, node.get("closed_at").asText().length())
+                                        .trim();
+                                LocalDateTime closeDateTime = LocalDateTime.parse(closedAt, DateTimeFormatter.ISO_DATE_TIME);
+                                trans_closedAt = closeDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            }
+
+
+
+                            JsonNode labels = node.get("labels");
+                            List labelList = new ArrayList();
+                            for (JsonNode label : labels) {
+
+                                labelList.add(label.get("name"));
+
+                            }
+                            //System.out.println("labelList확인: " + labelList.toString());
+
+
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("number", String.valueOf(node.get("number")));
+                            data.put("title", node.get("title"));
+                            data.put("register", node.get("user").get("login"));
+                            data.put("content", node.get("body"));
+
+                            data.put("createAt", trans_createdAt);
+                            data.put("closeAt", trans_closedAt);
+
+                            data.put("state", node.get("state"));
+                            data.put("labels", labelList);
+                            allData.add(data);
+
+                        }
+                    } else {
+                        break;
+                    }
+
+                    page += 1;
+                    dataCount += jsonNode.size();
+
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        //System.out.println(allData.toString());
+        System.out.println("==========서치===============");
+        for(Object jObject : allData){
+
+            String jObject_state = ((TextNode) ((Map<String, JsonNode>) jObject).get("state")).asText();
+            List<JsonNode> labels = (List<JsonNode>) ((Map<?, ?>) jObject).get("labels");
+
+
+            // open or closed 일경우
+            if (stateValue.equals(jObject_state)){
+                // labels에 labelValue가 포함되어 있을 경우
+                if (labels.stream().anyMatch(label -> label.asText().equalsIgnoreCase(labelValue))) {
+                    System.out.println(jObject.toString());
+                }
+
+
+
+            }
+            //all 일 경우
+            else if(stateValue.equals("all")){
+
+                if (labels.stream().anyMatch(label -> label.asText().equalsIgnoreCase(labelValue))) {
+                    System.out.println(jObject.toString());
+                }
+            }
+
+
+        }
+
+
+
     }
 
 
