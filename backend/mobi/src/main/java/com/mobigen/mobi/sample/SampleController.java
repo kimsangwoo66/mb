@@ -44,6 +44,13 @@ public class SampleController {
         return sampleService.getLlist();
     }
 
+    @GetMapping("/api/onLabels")
+    public ArrayList onLabelList() throws URISyntaxException {
+        System.out.println("라벨 리소스 동작");
+
+        return sampleService.getOnLabelList();
+    }
+
     @PostMapping("/api/searchIssue")
     public void sList(@RequestBody Map<String, String> requestData) throws URISyntaxException {
         String stateValue = requestData.get("stateValue");

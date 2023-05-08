@@ -14,9 +14,7 @@
                 <label>라벨 필터링</label>
                 <select name="labelFilter">
                     <option value="">null</option>
-                    <option>개선</option>
-                    <option>버그</option>
-                    <option>보류</option>
+                    <option v-for="label in labels" :value="label" :key="label">{{ label }}</option>
 
                 </select>
                  &nbsp;&nbsp;
@@ -50,6 +48,7 @@ export default {
     name: "AgTableComponent",
     data() {
         return {
+            labels: [],
             columnDefs: null,
             rowData: null
         }
@@ -69,8 +68,21 @@ export default {
             { make: 'Ford', model: 'Mondeo', price: 32000 },
             { make: 'Porsche', model: 'Boxter', price: 72000 }
         ];
+
+        this.fetchLabels();
+
     },
     methods: {
+        async fetchLabels(){
+            try {
+                const response = await axios.get("/api/onLabels");
+                this.labels = response.data;
+            }catch (e) {
+                console.log(e);
+            }
+        },
+
+
         async sendData(){
             this.stateValue = document.querySelector(
                 "input[name='radioBtn']:checked"

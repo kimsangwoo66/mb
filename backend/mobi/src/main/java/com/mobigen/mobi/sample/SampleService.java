@@ -443,6 +443,79 @@ public class SampleService {
     }
 
 
+    public ArrayList getOnLabelList() throws URISyntaxException {
+        ArrayList allData = new ArrayList();
+        int dataCount = 0;
+        int page = 1;
+
+
+        //git api를 사용하여 필요 데이터 정재 후 allData 리스트에 삽입
+        //{number=1583, state="closed", title="제목", closeAt=2023-03-08, content="내용",
+        // createAt=2023-03-08, register="veldise", labels=["개선","진행중"]} -> allData
+        while (true) {
+
+            URIBuilder builder = new URIBuilder(apiUrl);
+            builder.setParameter("state", "all");
+            builder.setParameter("per_page", "100");
+            builder.setParameter("page", Integer.toString(page));
+
+
+            try {
+                URI uri = builder.build();
+                HttpGet request = new HttpGet(uri);
+                request.addHeader("Authorization", "Bearer " + token);
+
+                HttpClient httpClient = HttpClients.createDefault();
+                HttpResponse response = httpClient.execute(request);
+                HttpEntity entity = response.getEntity();
+
+                if (entity != null) {
+                    String result = EntityUtils.toString(entity);
+                    ObjectMapper objectMapper = new ObjectMapper();
+
+                    JsonNode jsonNode = objectMapper.readTree(result);
+
+
+
+                    if (jsonNode.size() > 0) {
+                        for (JsonNode node : jsonNode) {
+
+                            JsonNode labels = node.get("labels");
+
+                            for (JsonNode label : labels) {
+                                //System.out.println("l2l: " + label.get("name"));
+                                if(allData.contains(label.get("name")) !=true)
+                                {
+                                    allData.add(label.get("name"));
+                                }
+
+                            }
+
+
+                        }
+                    } else {
+                        break;
+                    }
+
+                    page += 1;
+                    dataCount += jsonNode.size();
+
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        System.out.println("allData: " + allData.toString());
+
+        return allData;
+
+    }
+
+
 
     public void searchList(String stateValue, String labelValue, String startDate, String endDate) throws URISyntaxException {
         ArrayList allData = new ArrayList();
