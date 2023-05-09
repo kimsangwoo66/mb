@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -509,7 +511,7 @@ public class SampleService {
 
         }
 
-        System.out.println("allData: " + allData.toString());
+        //System.out.println("allData: " + allData.toString());
 
         return allData;
 
@@ -517,12 +519,13 @@ public class SampleService {
 
 
 
-    public void searchList(String stateValue, String labelValue, String startDate, String endDate) throws URISyntaxException {
+    public ArrayList searchList(String stateValue, String labelValue, String startDate, String endDate) throws URISyntaxException, ParseException {
         ArrayList allData = new ArrayList();
         int dataCount = 0;
         int page = 1;
-
-        Map<String, Integer> searchResult = new HashMap<>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        ArrayList searchResult = new ArrayList();
 
 
         //git api를 사용하여 필요 데이터 정재 후 allData 리스트에 삽입
@@ -631,13 +634,113 @@ public class SampleService {
 
             String jObject_state = ((TextNode) ((Map<String, JsonNode>) jObject).get("state")).asText();
             List<JsonNode> labels = (List<JsonNode>) ((Map<?, ?>) jObject).get("labels");
+            String jObject_createdDate = (String) ((Map<?, ?>) jObject).get("createAt");
 
+            Date api_createdDate = format.parse(jObject_createdDate);
+
+
+
+            /*
+            * 필터 조건 시작
+            * */
 
             // open or closed 일경우
             if (stateValue.equals(jObject_state)){
-                // labels에 labelValue가 포함되어 있을 경우
+
+                // 라벨링 필터 항목이 선택됬을 경우
                 if (labels.stream().anyMatch(label -> label.asText().equalsIgnoreCase(labelValue))) {
-                    System.out.println(jObject.toString());
+                    //System.out.println(jObject.toString());
+
+                    //startDate와 endDate 둘다 지정이 안되어 있을 경우
+                    if(endDate.isEmpty() && startDate.isEmpty())
+                    {
+                        searchResult.add(jObject);
+
+
+                    }
+                    // endDate만 지정 했을 경우
+                    else if(startDate.isEmpty()){
+
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_endDate = format.parse(endDate);
+                        if(input_endDate.getTime() >= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+
+
+                    }
+                    // startDate만 지정 했을 경우
+                    else if(endDate.isEmpty())
+                    {
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_startDate = format.parse(startDate);
+                        if(input_startDate.getTime() <= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+
+                    }
+                    // startDate와 endDate 둘다 지정이 되어있을 경우
+                    else{
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_startDate = format.parse(startDate);
+                        Date input_endDate = format.parse(endDate);
+
+                        if(input_startDate.getTime() <= api_createdDate.getTime() && input_endDate.getTime() >= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+                    }
+
+
+                }
+                // 라벨링 필터 항목이 null일 경우
+                else{
+
+                    //startDate와 endDate 둘다 지정이 안되어 있을 경우
+                    if(endDate.isEmpty() && startDate.isEmpty())
+                    {
+                        searchResult.add(jObject);
+
+
+                    }
+                    // endDate만 지정 했을 경우
+                    else if(startDate.isEmpty()){
+
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_endDate = format.parse(endDate);
+                        if(input_endDate.getTime() >= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+
+
+                    }
+                    // startDate만 지정 했을 경우
+                    else if(endDate.isEmpty())
+                    {
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_startDate = format.parse(startDate);
+                        if(input_startDate.getTime() <= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+
+                    }
+                    // startDate와 endDate 둘다 지정이 되어있을 경우
+                    else{
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_startDate = format.parse(startDate);
+                        Date input_endDate = format.parse(endDate);
+
+                        if(input_startDate.getTime() <= api_createdDate.getTime() && input_endDate.getTime() >= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+                    }
+
+
                 }
 
 
@@ -645,17 +748,102 @@ public class SampleService {
             }
             //all 일 경우
             else if(stateValue.equals("all")){
-
+                // 라벨링 필터 항목이 선택됬을 경우
                 if (labels.stream().anyMatch(label -> label.asText().equalsIgnoreCase(labelValue))) {
-                    System.out.println(jObject.toString());
+                    //startDate와 endDate 둘다 지정이 안되어 있을 경우
+                    if(endDate.isEmpty() && startDate.isEmpty())
+                    {
+                        searchResult.add(jObject);
+
+
+                    }
+                    // endDate만 지정 했을 경우
+                    else if(startDate.isEmpty()){
+
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_endDate = format.parse(endDate);
+                        if(input_endDate.getTime() >= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+
+
+                    }
+                    // startDate만 지정 했을 경우
+                    else if(endDate.isEmpty())
+                    {
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_startDate = format.parse(startDate);
+                        if(input_startDate.getTime() <= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+
+                    }
+                    // startDate와 endDate 둘다 지정이 되어있을 경우
+                    else{
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_startDate = format.parse(startDate);
+                        Date input_endDate = format.parse(endDate);
+
+                        if(input_startDate.getTime() <= api_createdDate.getTime() && input_endDate.getTime() >= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+                    }
+                }
+                // 라벨링 필터 항목이 null일 경우
+                else{
+                    //startDate와 endDate 둘다 지정이 안되어 있을 경우
+                    if(endDate.isEmpty() && startDate.isEmpty())
+                    {
+                        searchResult.add(jObject);
+
+
+                    }
+                    // endDate만 지정 했을 경우
+                    else if(startDate.isEmpty()){
+
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_endDate = format.parse(endDate);
+                        if(input_endDate.getTime() >= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+
+
+                    }
+                    // startDate만 지정 했을 경우
+                    else if(endDate.isEmpty())
+                    {
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_startDate = format.parse(startDate);
+                        if(input_startDate.getTime() <= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+
+                    }
+                    // startDate와 endDate 둘다 지정이 되어있을 경우
+                    else{
+                        //api에서 뽑은 createdDate와 사용자가 지정한 등록 기간을 비교하기 위해 Date타입으로 형 변환
+                        Date input_startDate = format.parse(startDate);
+                        Date input_endDate = format.parse(endDate);
+
+                        if(input_startDate.getTime() <= api_createdDate.getTime() && input_endDate.getTime() >= api_createdDate.getTime()){
+                            searchResult.add(jObject);
+
+                        }
+                    }
+
                 }
             }
 
 
         }
-
-
-
+        System.out.println("===================검색 필터 조건 처리 후 뽑은 데이터 확인======================");
+        System.out.println("searchResult확인: " + searchResult);
+        return searchResult;
     }
 
 

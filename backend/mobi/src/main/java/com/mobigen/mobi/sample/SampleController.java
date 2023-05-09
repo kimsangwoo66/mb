@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
 @Slf4j
@@ -52,7 +53,7 @@ public class SampleController {
     }
 
     @PostMapping("/api/searchIssue")
-    public void sList(@RequestBody Map<String, String> requestData) throws URISyntaxException {
+    public ArrayList sList(@RequestBody Map<String, String> requestData) throws URISyntaxException, ParseException {
         String stateValue = requestData.get("stateValue");
         String labelValue = requestData.get("labelValue");
         String startDate = requestData.get("startDate");
@@ -61,7 +62,7 @@ public class SampleController {
         System.out.println("state: " + stateValue + " label: " + labelValue + " startDate: "
                 + startDate + " endDate: " + endDate);
 
-        sampleService.searchList(stateValue, labelValue, startDate, endDate);
+        return sampleService.searchList(stateValue, labelValue, startDate, endDate);
 
 
 
