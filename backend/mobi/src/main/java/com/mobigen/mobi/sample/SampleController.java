@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class SampleController {
 //        sampleService.getList();
 //    }
 
+
+    // 등록자별 이슈 개수 api
     @GetMapping("/api/column")
     public Map gList() throws URISyntaxException {
 
@@ -31,6 +34,7 @@ public class SampleController {
         return sampleService.getList();
     }
 
+    // 담당자별 이슈 개수 api
     @GetMapping("/api/pie")
     public Map pList() throws URISyntaxException {
         System.out.println("pie 리소스 동작");
@@ -38,6 +42,7 @@ public class SampleController {
         return sampleService.getPieList();
     }
 
+    // 일별 이슈 등록 개수 api
     @GetMapping("/api/line")
     public Map lList() throws URISyntaxException {
         System.out.println("line 리소스 동작");
@@ -45,6 +50,7 @@ public class SampleController {
         return sampleService.getLlist();
     }
 
+    // 라벨 필터링 가져오기 api
     @GetMapping("/api/onLabels")
     public ArrayList onLabelList() throws URISyntaxException {
         System.out.println("라벨 리소스 동작");
@@ -52,8 +58,9 @@ public class SampleController {
         return sampleService.getOnLabelList();
     }
 
+    // 이슈 검색 api
     @PostMapping("/api/searchIssue")
-    public ArrayList sList(@RequestBody Map<String, String> requestData) throws URISyntaxException, ParseException {
+    public ArrayList sList(@RequestBody Map<String, String> requestData) throws URISyntaxException, ParseException, IOException {
         String stateValue = requestData.get("stateValue");
         String labelValue = requestData.get("labelValue");
         String startDate = requestData.get("startDate");

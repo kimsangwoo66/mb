@@ -31,10 +31,11 @@
 
         </div>
         <div class = "outer">
-        <ag-grid-vue style="width: 1000px; height: 500px; align-content: center;"
+        <ag-grid-vue style="width: 1400px; height: 700px; align-content: center;"
                      class="ag-theme-alpine"
                      :columnDefs="columnDefs"
-                     :rowData="rowData">
+                     :rowData="rowData"
+                     :pagination="true">
         </ag-grid-vue>
         </div>
     </div>
@@ -56,17 +57,20 @@ export default {
     components: {
         AgGridVue
     },
+
     beforeMount() {
         this.columnDefs = [
-            { field: 'make' },
-            { field: 'model' },
-            { field: 'price' }
+            { field: 'number' ,headerName: '번호'},
+            { field: 'state' , headerName: '상태'},
+            { field: 'title' , headerName: '제목'},
+            { field: 'closeAt',headerName: '해결일'},
+            { field: 'createAt' ,headerName: '등록일'},
+            { field: 'register' ,headerName: '등록자'},
+            { field: 'labels' ,headerName: '라벨'}
         ];
 
         this.rowData = [
-            { make: 'Toyota', model: 'Celica', price: 35000 },
-            { make: 'Ford', model: 'Mondeo', price: 32000 },
-            { make: 'Porsche', model: 'Boxter', price: 72000 }
+
         ];
 
         this.fetchLabels();
@@ -100,16 +104,25 @@ export default {
 
             await axios.post("/api/searchIssue", {
 
-                    stateValue: this.stateValue,
-                    labelValue: this.labelValue,
-                    startDate: this.startDate,
-                    endDate: this.endDate,
+                stateValue: this.stateValue,
+                labelValue: this.labelValue,
+                startDate: this.startDate,
+                endDate: this.endDate,
 
+            }).then(response => {
+                console.log("데이터객체확인: ",response.data)
+                this.columnDefs = [
+                    { field: 'number' ,headerName: '번호'},
+                    { field: 'state' , headerName: '상태'},
+                    { field: 'title' , headerName: '제목'},
+                    { field: 'closeAt',headerName: '해결일'},
+                    { field: 'createAt' ,headerName: '등록일'},
+                    { field: 'register' ,headerName: '등록자'},
+                    { field: 'labels' ,headerName: '라벨'}
+                ];
+
+                this.rowData = response.data;
             })
-
-            // }).then(response => {
-            //     console.log(response.data)
-            // })
 
 
 
