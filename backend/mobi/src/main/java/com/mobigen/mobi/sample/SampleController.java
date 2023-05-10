@@ -65,11 +65,12 @@ public class SampleController {
         String labelValue = requestData.get("labelValue");
         String startDate = requestData.get("startDate");
         String endDate = requestData.get("endDate");
+        String currentPage = requestData.get("currentPage");
 
         System.out.println("state: " + stateValue + " label: " + labelValue + " startDate: "
-                + startDate + " endDate: " + endDate);
+                + startDate + " endDate: " + endDate + " currentPage: " + currentPage);
 
-        return sampleService.searchList(stateValue, labelValue, startDate, endDate);
+        return sampleService.searchList(stateValue, labelValue, startDate, endDate, currentPage);
 
 
 

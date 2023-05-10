@@ -146,7 +146,7 @@ public class SampleService {
 
         }
 
-        System.out.println(allData.toString());
+        //System.out.println(allData.toString());
 //        System.out.println("dataCount: " + dataCount);
 
 
@@ -520,7 +520,7 @@ public class SampleService {
 
 
     // page 번호도 클라이언트에서 받아오기
-    public ArrayList searchList(String stateValue, String labelValue, String startDate, String endDate) throws URISyntaxException, ParseException, IOException {
+    public ArrayList searchList(String stateValue, String labelValue, String startDate, String endDate, String currentPage) throws URISyntaxException, ParseException, IOException {
 
         ArrayList searchResult = new ArrayList();
 
@@ -555,7 +555,7 @@ public class SampleService {
 
 
 
-        searchUrl = searchUrl + "&per_page=100&page=1";
+        searchUrl = searchUrl + "&per_page=10&page="+currentPage;
 
         System.out.println("searchUrl: " + searchUrl);
 
@@ -631,7 +631,9 @@ public class SampleService {
                     //System.out.println("searchObj: " + searchObj.toString());
                     searchResult.add(searchObj);
                 }
-
+                Map totalCnt = new HashMap();
+                totalCnt.put("totalCnt", jsonNode.get("total_count"));
+                searchResult.add(totalCnt);
 
                 System.out.println("===================검색 필터 조건 처리 후 뽑은 데이터 확인======================");
 
