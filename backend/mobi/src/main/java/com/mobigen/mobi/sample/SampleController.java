@@ -31,7 +31,7 @@ public class SampleController {
     public Map gList() throws URISyntaxException {
 
         System.out.println("차트 컨트롤러 동작");
-        return sampleService.getList();
+        return sampleService.getColumnList();
     }
 
     // 담당자별 이슈 개수 api
@@ -47,7 +47,7 @@ public class SampleController {
     public Map lList() throws URISyntaxException {
         System.out.println("line 리소스 동작");
 
-        return sampleService.getLlist();
+        return sampleService.getLinelist();
     }
 
     // 라벨 필터링 가져오기 api
