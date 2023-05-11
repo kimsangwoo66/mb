@@ -13,6 +13,7 @@
                 &nbsp;&nbsp;
                 <label>라벨 필터링</label>
                 <select name="labelFilter">
+
                     <option value="">null</option>
                     <option v-for="label in labels" :value="label" :key="label">{{ label }}</option>
 
@@ -36,7 +37,6 @@
                          :columnDefs="columnDefs"
                          :rowData="rowData"
                          :paginationPageSize="10"
-                         @grid-ready="onGridReady"
 
             >
             </ag-grid-vue>
@@ -45,6 +45,7 @@
         <div class="d-flex justify-content-center">
             <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" @input="onPaginationInput"></b-pagination>
         </div>
+
     </div>
 </template>
 
@@ -60,6 +61,7 @@ export default {
             columnDefs: null,
             rowData: null,
             currentPage: null,
+            // b-pagination 에서 총 페이지 개수 = (rows / perPage) + 1
             rows: null,
             perPage: 10,
         }
@@ -68,7 +70,7 @@ export default {
         AgGridVue
     },
 
-    beforeMount() {
+    mounted() {
         this.columnDefs = [
             { field: 'number' ,headerName: '번호'},
             { field: 'state' , headerName: '상태'},
@@ -85,10 +87,8 @@ export default {
 
     },
     methods: {
-        onGridReady(params) {
-            this.gridApi = params.api;
-            this.gridColumnApi = params.columnApi;
-        },
+
+
         async fetchLabels(){
             try {
                 const response = await axios.get("/api/onLabels");
@@ -109,10 +109,7 @@ export default {
             this.endDate = document.querySelectorAll('input[type="date"]')[1]
                 .value;
 
-            console.log("stateValue:", this.stateValue);
-            console.log("labelValue:", this.labelValue);
-            console.log("startDate:", this.startDate);
-            console.log("endDate:", this.endDate);
+
 
             await axios.post("/api/searchIssue", {
 
@@ -123,7 +120,7 @@ export default {
                 currentPage: 1
 
             }).then(response => {
-                console.log("데이터객체확인: ",response.data)
+                console.log("필터링데이터확인: ",response.data)
                 this.columnDefs = [
                     { field: 'number' ,headerName: '번호'},
                     { field: 'state' , headerName: '상태'},
@@ -136,9 +133,16 @@ export default {
 
                 this.rowData = response.data;
                 const totalCnt = response.data.find(obj => obj.totalCnt)?.totalCnt;
+
+                // 페이지 개수를 계산 하기 위한 바인딩
                 this.rows = totalCnt
 
+
+                // vue가 데이터 변경 처리후 DOM 업데이트
+                // -> pagination으로 인한 페이지 번호 UI를 재 랜더링 우선
                 this.$nextTick(() => {
+
+                    // Ag-grid 컴포넌트에 rowData 업데이트
                     if (this.$refs.agGrid && this.$refs.agGrid.api) {
                         this.$refs.agGrid.api.setRowData(this.rowData);
                     }
@@ -152,6 +156,7 @@ export default {
         async onPaginationInput(event) {
             const currentPage = event;
             console.log("현제 페이지 번호: " + currentPage);
+
             this.stateValue = document.querySelector(
                 "input[name='radioBtn']:checked"
             ).value;
@@ -161,10 +166,6 @@ export default {
             this.endDate = document.querySelectorAll('input[type="date"]')[1]
                 .value;
 
-            console.log("stateValue:", this.stateValue);
-            console.log("labelValue:", this.labelValue);
-            console.log("startDate:", this.startDate);
-            console.log("endDate:", this.endDate);
 
             await axios.post("/api/searchIssue", {
 
@@ -175,7 +176,7 @@ export default {
                 currentPage: currentPage
 
             }).then(response => {
-                console.log("데이터객체확인: ",response.data)
+                console.log("필터링데이터확인: ",response.data)
                 this.columnDefs = [
                     { field: 'number' ,headerName: '번호'},
                     { field: 'state' , headerName: '상태'},
@@ -188,9 +189,16 @@ export default {
 
                 this.rowData = response.data;
                 const totalCnt = response.data.find(obj => obj.totalCnt)?.totalCnt;
+
+
                 this.rows = totalCnt
                 this.currentPage = currentPage
+
+                // vue가 데이터 변경 처리후 DOM 업데이트
+                // -> pagination으로 인한 페이지 번호 UI를 재 랜더링 우선
                 this.$nextTick(() => {
+
+                    // Ag-grid 컴포넌트에 rowData 업데이트
                     if (this.$refs.agGrid && this.$refs.agGrid.api) {
                         this.$refs.agGrid.api.setRowData(this.rowData);
                     }
