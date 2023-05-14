@@ -18,17 +18,12 @@ import java.util.Map;
 public class SampleController {
 
     private final SampleService sampleService;
-//    @GetMapping("/sample")
-//    public void gList() throws URISyntaxException {
-//
-//        System.out.println("왜 안나옴?");
-//        sampleService.getList();
-//    }
+
 
 
     // 등록자별 이슈 개수 api
     @GetMapping("/api/column")
-    public Map gList() throws URISyntaxException {
+    public Map gList() throws URISyntaxException, IOException {
 
         System.out.println("차트 컨트롤러 동작");
         return sampleService.getColumnList();
@@ -36,7 +31,7 @@ public class SampleController {
 
     // 담당자별 이슈 개수 api
     @GetMapping("/api/pie")
-    public Map pList() throws URISyntaxException {
+    public Map pList() throws URISyntaxException, IOException {
         System.out.println("pie 리소스 동작");
 
         return sampleService.getPieList();
@@ -44,7 +39,7 @@ public class SampleController {
 
     // 일별 이슈 등록 개수 api
     @GetMapping("/api/line")
-    public Map lList() throws URISyntaxException {
+    public Map lList() throws URISyntaxException, IOException {
         System.out.println("line 리소스 동작");
 
         return sampleService.getLinelist();
@@ -52,7 +47,7 @@ public class SampleController {
 
     // 라벨 필터링 가져오기 api
     @GetMapping("/api/onLabels")
-    public ArrayList onLabelList() throws URISyntaxException {
+    public ArrayList onLabelList() throws URISyntaxException, IOException {
         System.out.println("라벨 리소스 동작");
 
         return sampleService.getOnLabelList();

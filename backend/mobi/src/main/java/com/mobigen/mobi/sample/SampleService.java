@@ -16,6 +16,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,11 +37,26 @@ public class SampleService {
     private String apiUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/issues";
     // https://api.github.com/repos/mobigen/IRIS-Analyzer/issues
 
+    private ArrayList allData;
+
+    @PostConstruct
+    public void init() throws URISyntaxException {
+        allData = getNeedList(); // 초기화 중에 데이터를 한 번 가져옴
+    }
+
     public ArrayList getNeedList() throws URISyntaxException {
-        ArrayList allData = new ArrayList();
+
+        if(allData != null){
+            return allData;
+        }
+
+        ArrayList findAllData = new ArrayList();
+
         int page = 1;
         int dataCount = 0;
 
+
+//
 
         //git api를 사용하여 필요 데이터 정재 후 allData 리스트에 삽입
         //{number=1583, state="closed", title="제목", closeAt=2023-03-08, content="내용",
@@ -54,6 +70,7 @@ public class SampleService {
 
             try {
                 URI uri = builder.build();
+                System.out.println("uri: " + uri);
                 HttpGet request = new HttpGet(uri);
                 request.addHeader("Authorization", "Bearer " + token);
 
@@ -120,7 +137,7 @@ public class SampleService {
                             data.put("closeAt", trans_closedAt);
                             data.put("state", node.get("state"));
                             data.put("labels", labelList);
-                            allData.add(data);
+                            findAllData.add(data);
 
                         }
                     } else {
@@ -139,13 +156,13 @@ public class SampleService {
 
         }
 
-        return allData;
+        return findAllData;
 
     }
 
     public Map getColumnList() throws URISyntaxException {
 
-        ArrayList allData = getNeedList();
+
         Map<String, Integer> registerCount = new HashMap<>();
 
         for(Object jObject : allData){
@@ -165,7 +182,7 @@ public class SampleService {
 
     public Map getPieList() throws URISyntaxException {
 
-        ArrayList allData = getNeedList();
+
         Map<String, Integer> assignCount = new HashMap<>();
 
         for(Object jObject : allData){
@@ -184,7 +201,7 @@ public class SampleService {
 
     public Map getLinelist() throws URISyntaxException {
 
-        ArrayList allData = getNeedList();
+
         Map<String, Integer> createAtCount = new HashMap<>();
 
         for(Object jObject : allData){
@@ -204,7 +221,7 @@ public class SampleService {
 
     public ArrayList getOnLabelList() throws URISyntaxException {
 
-        ArrayList allData = getNeedList();
+
         ArrayList noDuplicateLabels = new ArrayList();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -237,8 +254,8 @@ public class SampleService {
         String searchUrl = "https://api.github.com/search/issues?q=repo:" + owner + "/" + repo + "+type:issue,pr";
 
         /*
-        * 필터 조건
-        * */
+         * 필터 조건
+         * */
         // open 이거나 closed 일 경우
         if(stateValue.equals("all") == false)
         {
@@ -353,3 +370,4 @@ public class SampleService {
     }
 
 }
+
