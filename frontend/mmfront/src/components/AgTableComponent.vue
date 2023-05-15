@@ -14,7 +14,7 @@
                 <label>라벨 필터링</label>
                 <select name="labelFilter">
 
-                    <option value="">null</option>
+                    <option value="">전체</option>
                     <option v-for="label in labels" :value="label" :key="label">{{ label }}</option>
 
                 </select>
@@ -32,7 +32,7 @@
 
         </div>
         <div class = "outer">
-            <ag-grid-vue ref="agGrid" style="width: 1400px; height: 700px; align-content: center;"
+            <ag-grid-vue ref="agGrid" style="width: 1400px; height: 400px; align-content: center;"
                          class="ag-theme-alpine"
                          :columnDefs="columnDefs"
                          :rowData="rowData"
@@ -83,15 +83,16 @@ export default {
 
         this.rowData = [];
 
-        this.fetchLabels();
+        this.getLabels();
 
     },
     methods: {
 
 
-        async fetchLabels(){
+        async getLabels(){
             try {
-                const response = await axios.get("/api/onLabels");
+                const response = await axios.get("/api/labels");
+                console.log(response.data)
                 this.labels = response.data;
             }catch (e) {
                 console.log(e);
@@ -111,7 +112,7 @@ export default {
 
 
 
-            await axios.post("/api/searchIssue", {
+            await axios.post("/api/search-issue", {
 
                 stateValue: this.stateValue,
                 labelValue: this.labelValue,
@@ -121,15 +122,7 @@ export default {
 
             }).then(response => {
                 console.log("필터링데이터확인: ",response.data)
-                this.columnDefs = [
-                    { field: 'number' ,headerName: '번호'},
-                    { field: 'state' , headerName: '상태'},
-                    { field: 'title' , headerName: '제목'},
-                    { field: 'closeAt',headerName: '해결일'},
-                    { field: 'createAt' ,headerName: '등록일'},
-                    { field: 'register' ,headerName: '등록자'},
-                    { field: 'labels' ,headerName: '라벨'}
-                ];
+
 
                 this.rowData = response.data;
                 const totalCnt = response.data.find(obj => obj.totalCnt)?.totalCnt;
@@ -167,7 +160,7 @@ export default {
                 .value;
 
 
-            await axios.post("/api/searchIssue", {
+            await axios.post("/api/search-issue", {
 
                 stateValue: this.stateValue,
                 labelValue: this.labelValue,

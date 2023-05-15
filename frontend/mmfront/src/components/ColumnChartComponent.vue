@@ -6,10 +6,9 @@
 </template>
 
 <script>
-import Highcharts from 'highcharts'
-import accessibility from 'highcharts/modules/accessibility'
+
 import axios from "axios";
-accessibility(Highcharts);
+
 export default {
     name: "ColumnChartComponent",
     data() {
@@ -37,9 +36,7 @@ export default {
                 }, ]
 
             },
-            accessibility: { // 접근성 속성 추가
-                enabled: true
-            },
+
         }
     },
 

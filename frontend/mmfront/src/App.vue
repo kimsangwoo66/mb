@@ -17,8 +17,7 @@
 </template>
 
 <script>
-import Highcharts from 'highcharts'
-import accessibility from 'highcharts/modules/accessibility'
+
 //import axios from "axios";
 
 import PieChartComponent from "@/components/PieChartComponent.vue";
@@ -27,7 +26,7 @@ import AgTableComponent from "@/components/AgTableComponent.vue";
 import ColumnChartComponent from "@/components/ColumnChartComponent.vue";
 
 
-accessibility(Highcharts);
+
 
 
 export default {

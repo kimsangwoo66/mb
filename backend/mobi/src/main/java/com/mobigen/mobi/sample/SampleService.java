@@ -32,13 +32,13 @@ public class SampleService {
 
     @Value("${git.tokenvalue}")
     private String token;
-    private String owner = "mobigen";
-    private String repo = "IRIS-Analyzer";
-    private String apiUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/issues";
+
+    private String apiUrl = "https://api.github.com/repos/mobigen/IRIS-Analyzer/issues";
     // https://api.github.com/repos/mobigen/IRIS-Analyzer/issues
 
     private ArrayList allData;
 
+    //service 클래스 초ㅓ기화 시점에 데이터를 한번만 가져와서 캐시
     @PostConstruct
     public void init() throws URISyntaxException {
         allData = getNeedList(); // 초기화 중에 데이터를 한 번 가져옴
@@ -225,22 +225,32 @@ public class SampleService {
         ArrayList noDuplicateLabels = new ArrayList();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        for(Object jObject: allData){
-            Map<String, Object> data = (Map<String, Object>) jObject;
-            Object labelsObj = data.get("labels");
-            //System.out.println("labels: " + labelsObj);
+        String getLabelUri = "https://api.github.com/repos/mobigen/IRIS-Analyzer/labels";
+        URIBuilder builder = new URIBuilder(getLabelUri);
 
-            JsonNode labelsNode = objectMapper.convertValue(labelsObj, JsonNode.class);
-            for(JsonNode label: labelsNode){
+        try {
+            URI uri = builder.build();
+            HttpGet request = new HttpGet(uri);
+            request.addHeader("Authorization", "Bearer " + token);
 
-                if(noDuplicateLabels.contains(label) !=true)
-                {
-                    noDuplicateLabels.add(label);
+            HttpClient httpClient = HttpClients.createDefault();
+            HttpResponse response = httpClient.execute(request);
+            HttpEntity entity = response.getEntity();
+
+            if(entity !=null){
+                String result = EntityUtils.toString(entity);
+                JsonNode jsonNode = objectMapper.readTree(result);
+
+                for(JsonNode node: jsonNode){
+                    noDuplicateLabels.add(node.get("name"));
                 }
-
             }
 
+        }catch (Exception e){
+            e.printStackTrace();
+
         }
+
 
         return noDuplicateLabels;
 
@@ -251,13 +261,13 @@ public class SampleService {
 
         ArrayList searchResult = new ArrayList();
 
-        String searchUrl = "https://api.github.com/search/issues?q=repo:" + owner + "/" + repo + "+type:issue,pr";
+        String searchUrl = "https://api.github.com/search/issues?q=repo:mobigen/IRIS-Analyzer+type:issue,pr";
 
         /*
          * 필터 조건
          * */
         // open 이거나 closed 일 경우
-        if(stateValue.equals("all") == false)
+        if(!"all".equals(stateValue))
         {
             searchUrl = searchUrl + "+state:"+stateValue;
         }

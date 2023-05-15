@@ -124,6 +124,7 @@ export default {
                 });
             });
 
+
             // 파이 차트 재렌더링
             Highcharts.chart('chart-container', chartOptions);
         })
