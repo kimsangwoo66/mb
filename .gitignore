@@ -1,1 +1,6 @@
-.DS_Store
+**/.DS_Store/
+**/.idea/
+node_modules
+target
+nufront/.nuxt/
+nufront/node_modules/
