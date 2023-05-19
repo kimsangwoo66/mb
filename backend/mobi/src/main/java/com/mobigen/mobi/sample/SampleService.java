@@ -29,7 +29,7 @@ import java.util.Map;
 @Service
 public class SampleService {
 
-    @Value("${git.tokenvalue}")
+    @Value(value = "${git.tokenvalue}")
     private String token;
 
     private String apiUrl = "https://api.github.com/repos/mobigen/IRIS-Analyzer/issues";
