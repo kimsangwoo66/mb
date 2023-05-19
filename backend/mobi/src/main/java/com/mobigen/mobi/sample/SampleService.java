@@ -1,11 +1,9 @@
 package com.mobigen.mobi.sample;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.extern.slf4j.Slf4j;
-import netscape.javascript.JSObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -17,14 +15,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.*;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -262,39 +261,49 @@ public class SampleService {
         ArrayList searchResult = new ArrayList();
 
         String searchUrl = "https://api.github.com/search/issues?q=repo:mobigen/IRIS-Analyzer+type:issue,pr";
-
+        StringBuilder sb = new StringBuilder(searchUrl);
         /*
          * 필터 조건
          * */
         // open 이거나 closed 일 경우
         if(!"all".equals(stateValue))
         {
-            searchUrl = searchUrl + "+state:"+stateValue;
+
+            sb.append("+state:").append(stateValue);
+
+
         }
 
         //라벨이 존재할 경우
         if(labelValue.isEmpty() == false){
-            searchUrl = searchUrl + "+label:"+labelValue;
+            sb.append("+label:").append(labelValue);
+
         }
 
         // startDate와 endDate 둘다 지정했을 경우
         if(startDate.isEmpty() == false && endDate.isEmpty() == false)
         {
-            searchUrl = searchUrl + "+created:" + startDate + ".." + endDate;
+            sb.append("+created:").append(startDate).append("..").append(endDate);
+
         }
         // endDate만 지정했을 경우
         else if(startDate.isEmpty() == true && endDate.isEmpty() == false){
             // url 인코딩 -> %3C%3D == "<="
-            searchUrl = searchUrl + "+created:%3C%3D" + endDate;
+            String ev = URLEncoder.encode("<=");
+            sb.append("+created:").append(ev).append(endDate);
+
+
         }
         // startDate만 지정 했을 경우
         else if(startDate.isEmpty() == false && endDate.isEmpty() == true){
             // url 인코딩 -> %3E%3D == ">="
-            searchUrl = searchUrl + "+created:%3E%3D" + startDate;
+            String ev = URLEncoder.encode(">=");
+            sb.append("+created:").append(ev).append(startDate);
+
         }
 
-        searchUrl = searchUrl + "&per_page=10&page="+currentPage;
-        System.out.println("searchUrl: " + searchUrl);
+        sb.append("&per_page=10&page=").append(currentPage);
+
 
         /**
          * searchUrl 최종 참고
@@ -302,9 +311,9 @@ public class SampleService {
          * +state:open+label:개선+created:2016-07-01..2018-07-11&per_page=10&page=1
          *
          */
+        System.out.println("searchUrl: " + sb.toString());
+        URIBuilder builder = new URIBuilder(sb.toString());
 
-
-        URIBuilder builder = new URIBuilder(searchUrl);
 
         try {
             URI uri = builder.build();
