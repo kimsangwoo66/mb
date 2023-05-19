@@ -6,6 +6,8 @@ nufront/.nuxt/
 nufront/node_modules/
 **/application.properties
 .nuxt/
+/.nuxt/
+
 .idea
 *.iws
 *.iml
