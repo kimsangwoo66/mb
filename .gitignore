@@ -4,3 +4,11 @@ node_modules
 target
 nufront/.nuxt/
 nufront/node_modules/
+**/application.properties
+/.nuxt/
+.idea
+*.iws
+*.iml
+*.ipr
+
+/dist/
